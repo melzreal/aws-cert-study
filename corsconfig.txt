@@ -1,0 +1,18 @@
+## The code below should be added to the second bucket which contains the files you want to load in the first bucket
+add it in "permissions - CORS headers", with "Allowed origins" set to the Bucket website endpoint of the first bucket.
+
+[
+    {
+        "AllowedHeaders": [
+            "Authorization"
+        ],
+        "AllowedMethods": [
+            "GET"
+        ],
+        "AllowedOrigins": [
+            "http://indexweb-melbucket.s3-website-us-east-1.amazonaws.com"
+        ],
+        "MaxAgeSeconds": 3000
+    }
+]
+
