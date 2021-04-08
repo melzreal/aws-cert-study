@@ -1,4 +1,4 @@
-## Tracking study notes for the AWS Developer Certificate
+## Tracking study notes for the AWS Developer Certificate Exam
 
 ### Resources:
 
