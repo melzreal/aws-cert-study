@@ -1,0 +1,15 @@
+## Example policy for public read access to a bucket's resources
+
+{
+    "Version": "2012-10-17",
+    "Id": "Policy1617879687696",
+    "Statement": [
+        {
+            "Sid": "Stmt1617879684751",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::bucketname/*"
+        }
+    ]
+}
