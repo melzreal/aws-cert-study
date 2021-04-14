@@ -1,70 +1,136 @@
-##### Questions containing REST are usually related to APIs so api gateway is the best answer
 
-##### Each read capacity unit provdes one strongly consistent read per second or two for eventually consistent, for items up to 4KBs
+#### Each read capacity unit provides one strongly consistent read per second or two for eventually consistent, for items up to 4KBs
 
-##### Serverless applications should be built with lambda, api gateway and S3
+#### Serverless applications should be built with lambda, api gateway and S3
 
-##### RDS is NOT a supported event source for lambda
+#### The load balancer configuration for migrating an ERP system is an App Load Balancer with sticky sessions - whenever you see the need to use HTTP choose application load balancer as the correct type. If the questions path based routing, it also needs to be an application load balancer
 
-##### The load balancer configuration for migrating an ERP system is an App Load Balancer with sticky sessions - whenever you see the need to use HTTp its application load balancer. If the questions path based routing, it also needs to be an application load balancer
+#### IAM roles are specific for allowing instances to make API requests securly
 
-##### You can simulate an AZ failure by rebooting your RDS instance with forced failover
+#### User Pools manage sign in and sign up functionality in cognito
 
-##### The KMS operation generate-data-key returns a plaintext data key, ready to be used to encrypt a document
+#### Write capacity: 1kb per second. Read capacity 4kb per second for strongly consistent, 2 * 4KB per second for eventually consistent
 
-##### IAM roles are specific for allowing isntances to make API requests securly
+#### X-ray does NOT integrate with S3
 
-##### Secrets store charges you for storing your secrets
+- If your application performs operations that take a long time to complete, offload those tasks to a dedicated Elastic Beanstalk Worker environment to process tasks asynchronously
 
-##### If a lambda function is not running as quickly as you'd like, try configuring more memory for it. Choosing 256MB of memory allocates approximately twice as much CPU power to your lambda - lambda allocates CPU linearly in proportion to the amount of memory configured
 
-##### User Pools manage sign in and sign up functionality in cognito
+### Security
 
-##### Api gateway throttling supports 10 thousand requests per second, with 5 thousand concurrent requests
+- While the bucket policy specifies AES256 for encryption, the api call header should say x-amz-server-side-encryption: aws:kms
 
-##### Dynamo DB integrates well with serverless
+- For added security you should terminate https connections on your ec2 instances
 
-##### Dynamo db streams give you a time ordered sequence of all activity, good for audits. Great as lambda event source
+- Secrets store charges you for storing your secrets
 
-##### Write capacity: 1kb per second. Read capacity 4kb per second for strongly consistent, 2 * 4KB per second for eventually consistent
+- The KMS operation generate-data-key returns a plaintext data key, ready to be used to encrypt a document
 
-##### Use CloudFront with signed urls and store videos in S3
+
+### SQS / SES / SNS queues
+
+- SES lets you send emails from applications, but SQS is what you need if you want users to subscribe to emails
+
+- Dead letter queues allow you to prevent data loss
+
+
+### API Error handling
+
+- 500 server errors should be fixed by using an exponential backoff, you can retry the request then
+
+- If you hit a ProvisionedThroughPutExceeded you can use exponential backoff, to improve flow control by retrying requests using progressively longer waits. Default included in AWS SDK
+
+#### ChangeMessageVisibility lets you extend the lenght of time to process jobs in SQS
+
+### Kinesis
+
+- You should ensure the number of instances does not exceed the number of shards
+
+- Kinesis consumes application records according to a sequence number assigned when a record is written to a stream
+
+### Dynamo DB
+
+- DAX (dynamo db accelerator) is a highly available in memory cache delivering up to 10x performance improvement from miliseconds to microseconds
+
+- Dynamo DB integrates well with serverless
+
+- Dynamo db streams give you a time ordered sequence of all activity, good for audits. Great as lambda event source
+
+### Lambda
+
+#### 429 means ou have reached concurrent execution limits for Lambda
+
+- The reason for separating a lambda handler from its core business logic is for re-usability
+
+- After a lambda function is executed, it maintains execution context for some time in anticipation of another invocation. The service "freezes" that execution context after the function completes, and thaws the context for reuse. Each context provides 512 MB of additional disk space in the /tmp directory. If the question/issue that needs solving is about a large download being made by lambda, you should store the file in the /tmp directory of the execution context and reuse it
+
+- You can use lambda traffic shifting to point traffic to different versions of your app
+
+- Lambda@edge lets you make your apps globally distributed, improve performance and run code in response to events generated by the amazon CDN. You can also use it to authenticate and authorise a group of users
+
+- Reference external endpoints by using environment variables
+
+#### If a lambda function is not running as quickly as you'd like, try configuring more memory for it. Choosing 256MB of memory allocates approximately twice as much CPU power to your lambda - lambda allocates CPU linearly in proportion to the amount of memory configured
+
+#### RDS is NOT a supported event source for lambda
+
+### RDS
+
+- You can simulate an AZ failure by rebooting your RDS instance with forced failover
+
+- RDS is NOT a supported event source for lambda
+
+
+### Api Gateway
+
+- Ensure incoming api request data gets mapped to integration request and resulting integration is matted to response: use HTTP in API Gateway
+
+- Api gateway throttling supports 10 thousand requests per second, with 5 thousand concurrent requests
+
+- Questions containing REST are usually related to APIs so api gateway will be the best answer
+
+
+### Containers
+
+- Configure a Task Definition to allow containers to access ports on the host container instance
+
+### CloudWatch
+
+- Collect data on all users currently logged in every 10 seconds by publishing a high-resolution custom metric to CloudWatch. Metrics can be standard or high resolution - standard has a minute granularity, high resolution has one second granularity
+
+- You can configure alerts of more than x attempts to connect to a host by: configuring a VPC flow log with CloudWatch logs as the destination and a Cloudwatch metric filter for the destination with an alarm trigger
+
+- Default aws metrics are standard resolution
+
+- Use CloudWatch for downstream call tracing of lambda functions, combined with AWS x-ray. Cloudtrail isn't appropriate for downstream tracing, as it records API calls not event source of your functions / downstream events
+
+
+### CloudFormation
 
 - Enable stack termination protection to prevent accidental deletion of cloudformation stacks
 
 - The CloudFormation cfn-init helper script is used to install packages and start stop services on ec2 instances
 
-- Configure a VPC flow log with CloudWatch logs as the destintion. Create a Cloudwatch metric filter for destination. Create a Cloudwatdh alarm trigger. ##### - this is how you can configure alerts for more than x attempts to connect to the host
 
-- 500 server errors should be fixed by using an exponential backoff, you can retry the request then
-
-- Dead letter queues allow you to prevent data loss
-
-- You want to separate the lambda handler from the core logic because
-
-- Codedeploy has in-place or blue-green deployments
-
-- While the bucket policy specifies AES256 for encryption, the ####header should say x-amz-server-side-encryption: aws:kms
-
-- For added security you should ####terminate https connections on your ec2 instances
-
-- The reason for separating a lambda handler from its core business logic is for re-usability
-
-- SES lets you send emails from applications, but SQS is what you need if you want users to subscribe to emails
-
-- Kinesis consumes application records according to a sequence number assigned when a record is written to a stream
+### CI / CD: Cloudformation + Codedeploy
 
 - Combine cloudformation with codedeploy and aws sam to deploy code
 
-#### X-ray does NOT integrate with S3
+- Codedeploy has in-place or blue-green deployments
 
-#### 429 means ou have reached concurrent execution limits for Lambda
+- Lambda and ECS cannot use in-place deployment types
 
-#### ChangeMessageVisibility lets you extend the lenght of time to process jobs in SQS
+- CodeBuild uses buildspec.yml, CodeDeploy uses appspec.yml - YAML only
 
-#### You should ensure the number of instances does not exceed the number of shards
+- Cloudformations can be YAML or JSON
 
-- DAX is a highly available in memory cache delivering up to 10x performance improvement from miliseconds to microseconds
+#### All aws Lambda and ECS deployments are blue/green
 
-- After a lambda function is executed, it maintains execution context for some time in anticipation of another invocation. The service "freezes" that execution context after the function completes, and thaws the context for reuse. Each context provides 512 MB of additional disk space in the /tmp directory. If the question/issue that needs solving is about a large download being made by lambda, you should store the file in the /tmp directory of the execution context and reuse it
+- CodeDeploy allows you to shift traffic from a previous lambda function to a new version without shifting all traffic at once. For this you can use CodeDeployDefault.LambdaCanary10Percent5Minutes, Canary for shifts in two increments. Linear for shifts in equal increments.
+
+### Cloudfront
+
+- Implement HTTPS between viewers and Cloudfront by setting Viewer Protocol Policy to Redirect HTTP to HTTPS and Viewer protocol Policy to HTTPS only
+
+- Use CloudFront with signed urls to store videos in S3
 
